@@ -92,10 +92,10 @@ const implicitRoute = {
     parentBreadcrumb: {'zh-CN': '基础类型', 'en-US': 'Basic Type'},
     childBreadcrumb: { 'zh-CN': '类型配置', 'en-US': 'Type Config' }
   },
-  'adminConfig/adminMetric': {
-    parentBreadcrumb: {'zh-CN': '基础类型', 'en-US': 'Basic Type'},
-    childBreadcrumb: { 'zh-CN': '指标配置', 'en-US': 'Metric Config' }
-  },
+  // 'adminConfig/adminMetric': {
+  //   parentBreadcrumb: {'zh-CN': '基础类型', 'en-US': 'Basic Type'},
+  //   childBreadcrumb: { 'zh-CN': '指标配置', 'en-US': 'Metric Config' }
+  // },
   'adminConfig/groupBoard': {
     parentBreadcrumb: {'zh-CN': '基础类型', 'en-US': 'Basic Type'},
     childBreadcrumb: { 'zh-CN': '看板配置', 'en-US': 'Board Config' }

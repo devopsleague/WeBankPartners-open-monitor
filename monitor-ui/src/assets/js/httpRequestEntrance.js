@@ -89,7 +89,7 @@ function httpRequestEntrance(method, url, data, callback, customHttpConfig, errC
       }
     } else {
       if (response.status < 400 && callback !== undefined) {
-        if (response.data.status === 'OK') { 
+        if (response.data.status === 'OK') {
           return callback(response.data.data ,response.data.message, response.data)
         }
         errorMessage(response.data.message)

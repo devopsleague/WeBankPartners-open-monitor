@@ -607,7 +607,7 @@ func UpdateLogMonitorTemplate(c *gin.Context) {
 
 func DeleteLogMonitorTemplate(c *gin.Context) {
 	logMonitorTemplateGuid := c.Param("logMonitorTemplateGuid")
-	err := db.DeleteLogMonitorTemplate(logMonitorTemplateGuid)
+	err := db.DeleteLogMonitorTemplate(logMonitorTemplateGuid, middleware.GetMessageMap(c))
 	if err != nil {
 		middleware.ReturnHandleError(c, err.Error(), err)
 	} else {

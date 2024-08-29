@@ -136,6 +136,8 @@ func autoGenerateCustomDashboard(param *models.LogMetricGroupWithTemplate, metri
 	var metricMap = getMetricMap(metricList, param.MetricPrefixCode, serviceGroup)
 	var reqCountMetric, failCountMetric, sucRateMetric, costTimeAvgMetric *models.LogMetricTemplate
 	var sucCode = getRetCodeSuccessCode(param.RetCodeStringMap)
+	var serviceGroupTable = &models.ServiceGroupTable{}
+	x.SQL("SELECT guid,display_name,service_type FROM service_group where guid=?", serviceGroup).Get(serviceGroupTable)
 	if param.AutoCreateDashboard {
 		// 1. 先创建看板
 		dashboard := &models.CustomDashboardTable{
@@ -147,6 +149,12 @@ func autoGenerateCustomDashboard(param *models.LogMetricGroupWithTemplate, metri
 			RefreshWeek:    60,
 			TimeRange:      -1800,
 			LogMetricGroup: &param.LogMetricGroupGuid,
+		}
+		// 看板名称使用显示名
+		if serviceGroupTable != nil {
+			dashboard.Name = fmt.Sprintf("%s_%s", serviceGroupTable.DisplayName, param.MetricPrefixCode)
+		} else {
+			dashboard.Name = fmt.Sprintf("%s_%s", serviceGroup, param.MetricPrefixCode)
 		}
 		customDashboard = dashboard.Name
 		if len(serviceGroupsRoles) == 0 {

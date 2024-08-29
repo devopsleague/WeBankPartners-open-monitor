@@ -430,20 +430,6 @@ export default {
       }
     },
     saveConfig() {
-      // const res = {
-      //   alarm_list: ['xxxsdsddsffeeee', 'wefwefweffffwewe', 'werqqqqqqqqqwwee'],
-      //   custom_dashboard: 'wefwefeeeeeeeeeee'
-      // }
-      // let messageTips = this.$t('m_tips_success')
-      // if (!isEmpty(res) && hasIn(res, 'alarm_list') && hasIn(res, 'custom_dashboard')) {
-      //   messageTips = (isEmpty(res.alarm_list) ? '' : this.$t('m_has_create_warn') + ':' + res.alarm_list.join(';'))
-      //     + (isEmpty(res.custom_dashboard) ? '' : this.$t('m_has_create_dashboard') + ':' + res.custom_dashboard)
-      // }
-      // this.$Message.success({
-      //   content: messageTips,
-      //   duration: 100000
-      // })
-
       const tmpData = cloneDeep(this.businessConfig)
       this.processUpdateData(tmpData)
       if (this.paramsValidate(tmpData)) {
@@ -451,15 +437,25 @@ export default {
       }
       const methodType = this.isAdd ? 'POST' : 'PUT'
       this.$root.$httpRequestEntrance.httpRequestEntrance(methodType, this.$root.apiCenter.logMetricGroup, tmpData, res => {
-        let messageTips = this.$t('m_tips_success')
+        const messageTips = this.$t('m_tips_success')
+        let tipOne = ''
+        let tipTwo = ''
         if (!isEmpty(res) && hasIn(res, 'alarm_list') && hasIn(res, 'custom_dashboard')) {
-          messageTips = (isEmpty(res.alarm_list) ? '' : this.$t('m_has_create_warn') + ':' + res.alarm_list.join(';'))
-            + (isEmpty(res.custom_dashboard) ? '' : this.$t('m_has_create_dashboard') + ':' + res.custom_dashboard)
+          tipOne = isEmpty(res.alarm_list) ? '' : this.$t('m_has_create_warn') + ':' + res.alarm_list.join(';')
+          tipTwo = isEmpty(res.custom_dashboard) ? '' : this.$t('m_has_create_dashboard') + ':' + res.custom_dashboard
+          this.$Message.success({
+            render: h => h('div', { class: 'add-business-config' }, [
+              h('div', tipOne),
+              h('div', tipTwo)
+            ]),
+            duration: 5
+          })
+        } else {
+          this.$Message.success({
+            content: messageTips,
+            duration: 2
+          })
         }
-        this.$Message.success({
-          content: messageTips,
-          duration: 5
-        })
         this.showModel = false
         this.$emit('reloadMetricData', this.parentGuid)
       })
@@ -574,6 +570,21 @@ export default {
   margin:6px 0;
   display: flex;
   align-items: center;
+}
+
+</style>
+
+<style lang="less">
+.add-business-config {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 900px;
+}
+.add-business-config > div {
+  max-width: 850px;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 </style>

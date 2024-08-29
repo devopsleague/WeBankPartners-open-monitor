@@ -236,7 +236,7 @@
                       <div v-html="processHtmlText(item.i)" class='header-grid-name-text'></div>
                     </Tooltip>
                     <span v-else @click.stop="">
-                      <Input v-model.trim="item.i" class="editChartId" autofocus :maxlength="30" show-word-limit style="width:150px" size="small" placeholder="" />
+                      <Input v-model.trim="item.i" class="editChartId" autofocus :maxlength="100" show-word-limit style="width:150px" size="small" placeholder="" />
                     </span>
                     <!-- <Poptip
                       transfer

@@ -224,7 +224,9 @@ func getUpdateLogMonitorTemplateActions(param *models.LogMonitorTemplateDto, ope
 
 func DeleteLogMonitorTemplate(logMonitorTemplateGuid string) (err error) {
 	var actions []*Action
-	actions, err = getDeleteLogMonitorTemplateActions(logMonitorTemplateGuid)
+	if actions, err = getDeleteLogMonitorTemplateActions(logMonitorTemplateGuid); err != nil {
+		return
+	}
 	err = Transaction(actions)
 	return
 }

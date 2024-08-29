@@ -29,10 +29,17 @@ const (
 
 func autoGenerateAlarmStrategy(alarmStrategyParam models.AutoAlarmStrategyParam) (actions []*Action, result []string, err error) {
 	var subActions []*Action
+	var serviceGroupTable *models.ServiceGroupTable
+	// 显示名
+	var displayServiceGroup = alarmStrategyParam.ServiceGroup
 	result = []string{}
 	actions = []*Action{}
 	// 自动创建告警
 	if alarmStrategyParam.AutoCreateWarn {
+		x.SQL("SELECT guid,display_name,service_type FROM service_group where guid=?", alarmStrategyParam.ServiceGroup).Get(serviceGroupTable)
+		if serviceGroupTable != nil {
+			displayServiceGroup = serviceGroupTable.DisplayName
+		}
 		codeList := getTargetCodeMap(alarmStrategyParam.CodeStringMap)
 		autoAlarmMetricList := getAutoAlarmMetricList(alarmStrategyParam.MetricList, alarmStrategyParam.ServiceGroup, alarmStrategyParam.MetricPrefixCode)
 		// 添加 other默认告警
@@ -42,7 +49,7 @@ func autoGenerateAlarmStrategy(alarmStrategyParam models.AutoAlarmStrategyParam)
 				// 添加告警配置基础信息
 				alarmStrategy := &models.GroupStrategyObj{NotifyList: make([]*models.NotifyObj, 0), Conditions: make([]*models.StrategyConditionObj, 0)}
 				metricTags := make([]*models.MetricTag, 0)
-				alarmStrategy.Name = fmt.Sprintf("%s-%s %s %s%s", code, alarmMetric.MetricId, translateSymbol(alarmMetric.Operator), alarmMetric.Threshold, getAlarmMetricUnit(alarmMetric.Metric))
+				alarmStrategy.Name = fmt.Sprintf("%s-%s %s %s%s", code, generateMetricGuidDisplayName(alarmStrategyParam.MetricPrefixCode, alarmMetric.Metric, displayServiceGroup), translateSymbol(alarmMetric.Operator), alarmMetric.Threshold, getAlarmMetricUnit(alarmMetric.Metric))
 				if code == constOtherCode {
 					alarmStrategy.Priority = "medium"
 				} else {
@@ -135,10 +142,14 @@ func autoGenerateCustomDashboard(dashboardParam models.AutoCreateDashboardParam)
 	var reqCountMetric, failCountMetric, sucRateMetric, costTimeAvgMetric *models.LogMetricTemplate
 	var sucCode = getRetCodeSuccessCode(dashboardParam.RetCodeStringMap)
 	var serviceGroupTable = &models.ServiceGroupTable{}
+	var displayServiceGroup = dashboardParam.ServiceGroup
 	var customDashboardList []*models.CustomDashboardTable
 	actions = []*Action{}
 	now := time.Now()
 	x.SQL("SELECT guid,display_name,service_type FROM service_group where guid=?", dashboardParam.ServiceGroup).Get(serviceGroupTable)
+	if serviceGroupTable != nil {
+		displayServiceGroup = serviceGroupTable.DisplayName
+	}
 	if dashboardParam.AutoCreateDashboard {
 		// 1. 先创建看板
 		dashboard := &models.CustomDashboardTable{
@@ -152,11 +163,7 @@ func autoGenerateCustomDashboard(dashboardParam models.AutoCreateDashboardParam)
 			LogMetricGroup: &dashboardParam.LogMetricGroupGuid,
 		}
 		// 看板名称使用显示名
-		if serviceGroupTable != nil {
-			dashboard.Name = fmt.Sprintf("%s_%s", serviceGroupTable.DisplayName, dashboardParam.MetricPrefixCode)
-		} else {
-			dashboard.Name = fmt.Sprintf("%s_%s", dashboardParam.ServiceGroup, dashboardParam.MetricPrefixCode)
-		}
+		dashboard.Name = fmt.Sprintf("%s_%s", displayServiceGroup, dashboardParam.MetricPrefixCode)
 		customDashboard = dashboard.Name
 		// 查询看板 名称是否已存在
 		if customDashboardList, err = QueryCustomDashboardListByName(customDashboard); err != nil {
@@ -191,7 +198,7 @@ func autoGenerateCustomDashboard(dashboardParam models.AutoCreateDashboardParam)
 			chartParam1 := &models.CustomChartDto{
 				Public:             true,
 				SourceDashboard:    int(newDashboardId),
-				Name:               fmt.Sprintf("%s-%s/%s", code, reqCountMetric.Metric, dashboardParam.ServiceGroup),
+				Name:               fmt.Sprintf("%s-%s/%s", code, reqCountMetric.Metric, displayServiceGroup),
 				ChartTemplate:      "one",
 				ChartType:          "bar",
 				LineType:           "bar",
@@ -218,7 +225,7 @@ func autoGenerateCustomDashboard(dashboardParam models.AutoCreateDashboardParam)
 			chartParam2 := &models.CustomChartDto{
 				Public:             true,
 				SourceDashboard:    int(newDashboardId),
-				Name:               fmt.Sprintf("%s-%s/%s", code, sucRateMetric.Metric, dashboardParam.ServiceGroup),
+				Name:               fmt.Sprintf("%s-%s/%s", code, sucRateMetric.Metric, displayServiceGroup),
 				ChartTemplate:      "one",
 				ChartType:          "line",
 				LineType:           "line",
@@ -244,7 +251,7 @@ func autoGenerateCustomDashboard(dashboardParam models.AutoCreateDashboardParam)
 			chartParam3 := &models.CustomChartDto{
 				Public:             true,
 				SourceDashboard:    int(newDashboardId),
-				Name:               fmt.Sprintf("%s-%s/%s", code, costTimeAvgMetric.Metric, dashboardParam.ServiceGroup),
+				Name:               fmt.Sprintf("%s-%s/%s", code, costTimeAvgMetric.Metric, displayServiceGroup),
 				ChartTemplate:      "one",
 				ChartType:          "line",
 				LineType:           "line",
@@ -290,6 +297,13 @@ func autoGenerateCustomDashboard(dashboardParam models.AutoCreateDashboardParam)
 
 func generateMetricGuid(metric, serviceGroup string) string {
 	return fmt.Sprintf("%s__%s", metric, serviceGroup)
+}
+
+func generateMetricGuidDisplayName(metricPrefixCode, metric, displayServiceGroup string) string {
+	if metricPrefixCode != "" {
+		metric = metricPrefixCode + metric
+	}
+	return fmt.Sprintf("%s__%s", metric, displayServiceGroup)
 }
 
 func getServiceGroupRoles(serviceGroup string) []string {
@@ -430,6 +444,10 @@ func translateSymbol(operator string) string {
 		return "less than"
 	case "<=":
 		return "less than or equal"
+	case "==":
+		return "equal to"
+	case "!=":
+		return "not equal to"
 	}
 	return ""
 }

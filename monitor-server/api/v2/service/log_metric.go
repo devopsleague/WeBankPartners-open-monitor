@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -569,15 +570,42 @@ func validateLogMonitorTemplateParam(param *models.LogMonitorTemplateDto) (err e
 			err = fmt.Errorf("metric: %s log param name can not empty", v.Metric)
 			return
 		}
-		//if v.AggType != "avg" && v.AggType != "max" && v.AggType != "min" && v.AggType != "sum" && v.AggType != "count" {
-		//	err = fmt.Errorf("metric: %s  aggType: %s illegal", v.Metric, v.AggType)
-		//	return
-		//}
+		if v.AutoAlarm {
+			if err = checkThresholdWarnConfigInvalid(v.Metric, v.RangeConfig); err != nil {
+				return
+			}
+		}
 		if v.Step == 0 {
 			v.Step = 10
 		}
 	}
 	return
+}
+
+func checkThresholdWarnConfigInvalid(metric, rangeConfig string) error {
+	temp := &models.ThresholdConfig{}
+	var intTime int
+	var err error
+	if err = json.Unmarshal([]byte(rangeConfig), temp); err != nil {
+		return getError(metric, rangeConfig)
+	}
+	if temp == nil {
+		return getError(metric, rangeConfig)
+	}
+	if temp.Operator == "" || temp.Time == "" || temp.TimeUnit == "" || temp.Threshold == "" {
+		return getError(metric, rangeConfig)
+	}
+	if _, err = strconv.ParseFloat(temp.Threshold, 64); err != nil {
+		return getError(metric, rangeConfig)
+	}
+	if intTime, err = strconv.Atoi(temp.Time); err != nil || intTime <= 0 {
+		return getError(metric, rangeConfig)
+	}
+	return nil
+}
+
+func getError(metric, rangeConfig string) error {
+	return fmt.Errorf("metric: %s alarm config:%+v illegal", metric, rangeConfig)
 }
 
 func UpdateLogMonitorTemplate(c *gin.Context) {

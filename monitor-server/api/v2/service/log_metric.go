@@ -598,7 +598,7 @@ func checkThresholdWarnConfigInvalid(metric, rangeConfig string) error {
 	if _, err = strconv.ParseFloat(temp.Threshold, 64); err != nil {
 		return getError(metric, rangeConfig)
 	}
-	if intTime, err = strconv.Atoi(temp.Time); err != nil || intTime <= 0 {
+	if intTime, err = strconv.Atoi(temp.Time); err != nil || intTime < 0 {
 		return getError(metric, rangeConfig)
 	}
 	return nil

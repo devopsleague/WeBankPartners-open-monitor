@@ -332,7 +332,7 @@ export default {
             <span>{data.display_name}</span>
           </div>
           {
-            data.selected && <div class="tree-item-btn" onClick={(e) => {e.stopPropagation()}}>
+            data.selected && <div class="tree-item-btn" onClick={e => {e.stopPropagation()}}>
               <Tooltip placement="top" max-width="400" content={this.$t('m_resourceLevel_addAssociatedObject')}>
                 <Button size="small" type="primary" onClick={() => {this.associatedObject(data)}}>
                   <Icon type="ios-cube" />

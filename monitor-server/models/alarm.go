@@ -663,6 +663,17 @@ type ProblemAlarmOptions struct {
 	MetricList    []string `json:"metricList"`
 	AlarmNameList []string `json:"alarmNameList"`
 }
+type ProblemAlarmOptionsNew struct {
+	EndpointList  []AlarmEndpoint `json:"endpointList"`
+	MetricList    []string        `json:"metricList"`
+	AlarmNameList []string        `json:"alarmNameList"`
+}
+
+type AlarmEndpoint struct {
+	Name        string `json:"name"`
+	DisplayName string `json:"displayName"`
+	UpdateTime  string `json:"updateTime"`
+}
 
 type QueryProcessDefinitionPublicResponse struct {
 	Code    int         `json:"code"`
@@ -717,4 +728,11 @@ type AutoAlarmStrategyParam struct {
 	EndpointGroup      string
 	Operator           string
 	ErrMsgObj          *ErrorMessageObj
+}
+
+type AlarmOptionsParam struct {
+	Status    string `json:"status"`
+	AlarmName string `json:"alarmName"`
+	Endpoint  string `json:"endpoint"`
+	Metric    string `json:"metric"`
 }

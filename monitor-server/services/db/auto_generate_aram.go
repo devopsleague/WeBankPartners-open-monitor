@@ -49,7 +49,7 @@ func autoGenerateAlarmStrategy(alarmStrategyParam models.AutoAlarmStrategyParam)
 				// 添加告警配置基础信息
 				alarmStrategy := &models.GroupStrategyObj{NotifyList: make([]*models.NotifyObj, 0), Conditions: make([]*models.StrategyConditionObj, 0)}
 				metricTags := make([]*models.MetricTag, 0)
-				alarmStrategy.Name = fmt.Sprintf("%s-%s %s %s%s", code, generateMetricGuidDisplayName(alarmStrategyParam.MetricPrefixCode, alarmMetric.Metric, displayServiceGroup), translateSymbol(alarmMetric.Operator), alarmMetric.Threshold, getAlarmMetricUnit(alarmMetric.Metric))
+				alarmStrategy.Name = fmt.Sprintf("%s-%s %s %s%s", code, generateMetricGuidDisplayName(alarmStrategyParam.MetricPrefixCode, alarmMetric.Metric, displayServiceGroup), alarmMetric.Operator, alarmMetric.Threshold, getAlarmMetricUnit(alarmMetric.Metric))
 				if code == constOtherCode {
 					alarmStrategy.Priority = "medium"
 				} else {
@@ -431,25 +431,6 @@ func generateChartSeries(serviceGroup, monitorType, code string, codeList []stri
 		}
 	}
 	return dto
-}
-
-// translateSymbol 字符翻译
-func translateSymbol(operator string) string {
-	switch operator {
-	case ">":
-		return "greater than"
-	case ">=":
-		return "greater than or equal"
-	case "<":
-		return "less than"
-	case "<=":
-		return "less than or equal"
-	case "==":
-		return "equal to"
-	case "!=":
-		return "not equal to"
-	}
-	return ""
 }
 
 func calcDisplayConfig(index int) models.DisplayConfig { // index是item在数组中的索引，item是数组中的其中一个

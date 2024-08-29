@@ -2001,16 +2001,16 @@ func matchAlarmGroups(alarmStrategyList, endpointList []string) (strategyGroupMa
 	return
 }
 
-func GetAlarmNameList(status string) (list []string, err error) {
+func GetAlarmNameList(status, alarmName string) (list []string, err error) {
 	var newList []string
 	var closed = 1
 	if status == "firing" {
 		closed = 0
 	}
 	if status == "" {
-		err = x.SQL("select distinct alarm_name from alarm union select distinct alert_title from alarm_custom").Find(&list)
+		err = x.SQL("select alarm_name from (select distinct alarm_name,start from alarm union select distinct alert_title as alarm_name,update_at as start from alarm_custom) t order by t.start desc limit 20").Find(&list)
 	} else {
-		err = x.SQL("select distinct alarm_name from alarm where status=? union select distinct alert_title from alarm_custom where closed=?", status, closed).Find(&list)
+		err = x.SQL("select alarm_name from (select distinct alarm_name,start from alarm where status=? union select distinct alert_title as alarm_name,update_at as start from alarm_custom where closed=?) t order by t.start desc limit 20", status, closed).Find(&list)
 	}
 	if len(list) > 0 {
 		for _, s := range list {

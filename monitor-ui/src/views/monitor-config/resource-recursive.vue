@@ -94,7 +94,7 @@
       <Form :model="currentData" label-position="left" :label-width="60">
         <FormItem :label="$t('m_resourceLevel_role')">
           <Select v-model="selectedRole" multiple filterable>
-            <Option v-for="item in allRole" :value="item.value" :key="item.value">{{ item.name }}</Option>
+            <Option v-for="item in allRole" :value="item.value" :key="item.value">{{ item.display_name }}</Option>
           </Select>
         </FormItem>
       </Form>

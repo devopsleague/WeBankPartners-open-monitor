@@ -150,8 +150,8 @@
                     </DropdownItem>
                   </DropdownMenu>
                 </div>
-                <div v-else class='copy-drowdown-slot' @click="e => e.stopPropagation()">
-                  <div class='copy-drowdown-slot-select'>
+                <div v-else class='copy-drowdown-slot'>
+                  <div class='copy-drowdown-slot-select' @click="e => e.stopPropagation()">
                     <Input v-model.trim="filterChartName"
                            clearable
                            :placeholder="$t('m_placeholder_input') + $t('m_graph_name')"
@@ -1006,7 +1006,16 @@ export default {
         needSetItem.y = lastItem.y
       }
     },
+    closeDropDownView(){
+      const elements = document.querySelectorAll('.ivu-select-dropdown')
+      elements.forEach(el => {
+        if (getComputedStyle(el).display !== 'none') {
+          el.style.display = 'none'
+        }
+      })
+    },
     async onAddChart(copyInfo, type) {
+      this.closeDropDownView()
       if (type === 'add') {
         // type为add的时候为新增，默认copyInfo只有一个
         const name = this.processInitialChartName()
@@ -1606,10 +1615,8 @@ export default {
   border-color: #b5d0fb !important;
 }
 
-.chart-option-menu {
-  .ivu-select-dropdown {
-    max-height: 100vh !important;
-  }
+.ivu-select-dropdown {
+  max-height: 100vh !important;
 }
 
 .grid-content {
@@ -1801,6 +1808,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  // max-height: 220px;
 
   .copy-drowdown-slot-select {
     display: flex;

@@ -22,6 +22,7 @@
   "dashboard_name_repeat_error": "Save failed: A dashboard with the same name already exists",
   "dashboard_id_exist_error": "Import failed:dashboard ID already exists",
   "import_dashboard_name_exist_error": "Import failed:dashboard Name %s already exists",
+  "create_dashboard_name_exist_error": "Save Failed:dashboard Name %s already exists",
   "metric_not_support_preview": "The object group currently does not support the current type. Please switch to a single object to preview",
   "type_config_name_repeat_error": "Save failed: The same type configuration already exists",
   "type_config_association_obj_error": "Delete failed: An associated object cannot be deleted",

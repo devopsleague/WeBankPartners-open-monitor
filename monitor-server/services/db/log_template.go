@@ -241,7 +241,7 @@ func getDeleteLogMonitorTemplateActions(logMonitorTemplateGuid string, errMsgObj
 		return
 	}
 	if len(logMetricGroupNameList) > 0 {
-		err = fmt.Errorf(errMsgObj.ImportDashboardNameExistError, strings.Join(logMetricGroupNameList, ","))
+		err = fmt.Errorf(errMsgObj.LogMonitorTemplateDeleteError, strings.Join(logMetricGroupNameList, ","))
 		return
 	}
 	actions = append(actions, &Action{Sql: "delete from log_metric_template where log_monitor_template=?", Param: []interface{}{logMonitorTemplateGuid}})

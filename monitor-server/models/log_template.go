@@ -74,10 +74,10 @@ type LogMetricTemplate struct {
 }
 
 type ThresholdConfig struct {
-	Operator  string      `json:"operator"`  // 操作符号
-	Threshold interface{} `json:"threshold"` // 阈值,支持 int,string类型
-	Time      interface{} `json:"time"`      // 持续时间,支持 int,string类型
-	TimeUnit  string      `json:"time_unit"` // 时间单位
+	Operator  string `json:"operator"`  // 操作符号
+	Threshold string `json:"threshold"` // 阈值
+	Time      string `json:"time"`      // 持续时间
+	TimeUnit  string `json:"time_unit"` // 时间单位
 }
 
 func (l *LogMetricTemplate) TransToLogMetric() (output *LogMetricConfigTable) {

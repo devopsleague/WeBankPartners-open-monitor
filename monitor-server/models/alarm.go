@@ -708,3 +708,13 @@ type AlarmEngineConfigRow struct {
 	AlarmName     string `json:"alarm_name" xorm:"alarm_name"`
 	ActiveWindow  string `json:"active_window" xorm:"active_window"`
 }
+
+type AutoAlarmStrategyParam struct {
+	*LogMetricGroupWithTemplate
+	MetricList         []*LogMetricTemplate
+	ServiceGroupsRoles []string
+	ServiceGroup       string
+	EndpointGroup      string
+	Operator           string
+	ErrMsgObj          *ErrorMessageObj
+}

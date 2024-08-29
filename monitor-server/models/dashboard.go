@@ -566,3 +566,12 @@ type ComparisonChartQueryParam struct {
 	CalcType       []string `json:"calcType"`       // 计算数值: diff 差值,diff_percent 差值百分比
 	TimeSecond     int64    `json:"timeSecond"`     // 时间范围
 }
+
+type AutoCreateDashboardParam struct {
+	*LogMetricGroupWithTemplate
+	MetricList         []*LogMetricTemplate
+	ServiceGroupsRoles []string
+	ServiceGroup       string
+	Operator           string
+	ErrMsgObj          *ErrorMessageObj
+}
